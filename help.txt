@@ -1,0 +1,6 @@
+parcel-bundler is used to run this project
+to run the project, go to root directory,
+
+"parcel index.html"
+
+should run on localhost:1234
