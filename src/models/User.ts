@@ -1,78 +1,48 @@
 interface UserPropsMain{
-  id?: number;
+  id: number;
   name: string;
   age: number;
 }
-
-interface UserPropsSet{
-  id?: number;
-  name?: string;
-  age?: number;
-}
-
-type CallBack = () => void; //  A CallBack function type alias which takes no argument and return void
-
-
-interface UserClassInterface{
-  events: { [key: string]: CallBack[] }
-  get(propsName: string): (string | number);
-  set(update: UserPropsSet): void;
-  on(eventName: string, callback: CallBack): void;
-  trigger(eventName: string): void;
-  fetch(): void;
-  save(): void;
-}
-
-// following is a User class
-
-import axios, { AxiosResponse } from 'axios';
-
-export class User implements UserClassInterface{
-  events: { [key: string]: CallBack[] } = {};
-
-  constructor(private data: UserPropsMain) { 
-  }
-  
-  get(propName: string): (string | number) {
-    return this.data[propName];
+import { Eventing } from "./Eventing";
+import { Sync } from "./Sync";
+import { Attributes } from "./Attributes";
+import { AxiosResponse } from 'axios';
+const rootURL = "http://localhost:3000/users"; 
+type CallBack = () => void;
+export class User{
+  public eventing: Eventing = new Eventing(); // this has on,trigger methods
+  public sync: Sync<UserPropsMain> = new Sync<UserPropsMain>(rootURL); // this has fetch(),save() methods
+  public attributes: Attributes<UserPropsMain>; // this has get(), set() methods
+  constructor(attr: UserPropsMain){
+    this.attributes = new Attributes<UserPropsMain>(attr);
   }
 
-  set(update: UserPropsSet): void{
-    Object.assign(this.data, update);
+  get = (propName: keyof UserPropsMain) => {
+    return this.attributes.get<keyof UserPropsMain>(propName);
   }
 
-  on(eventName: string, callback: CallBack): void{
-    let handlers = this.events[eventName] || [];
-    handlers.push(callback);
-    this.events[eventName] = handlers;
+  set = (data: UserPropsMain):void => {
+    this.attributes.set(data);
   }
 
-  trigger(eventName: string): void{
-    let handlers = this.events[eventName];
-    if(!handlers || handlers.length === 0){
-      return;
-    }
-    handlers.forEach(callback => {
-      callback();
-    })
+  on = (eventName: string, callback: CallBack) => {
+    this.eventing.on(eventName, callback);
   }
 
-  fetch(): void{
-    axios.get(`http://localhost:3000/users/`)
-      .then((response: AxiosResponse): void => {
-        console.log(response.data);
-      })
+  trigger = (eventName: string): void => {
+    this.eventing.trigger(eventName);
+  }
+
+  fetch = (id: number):void => {
+    this.sync.fetch(id)
+      .then((response: AxiosResponse) => console.log(response.data))
       .catch(err => console.log(err));
   }
 
-  save(): void{
-    if (!this.data.id) {
-      axios.post(`http://localhost:3000/users/`, this.data)
-        .then((response: AxiosResponse): void => {
-          this.data.id = response.data.id;
-        });
-    } else if(this.data.id) {
-      axios.put(`http://localhost:3000/users/${this.get('id')}`, this.data);
-    }
+  save = (data: UserPropsMain) => {
+    this.sync.save(data)
+      .then((response: AxiosResponse) => console.log(response.data))
+      .catch(err => console.log(err));
   }
+
 }
