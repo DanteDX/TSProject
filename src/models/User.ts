@@ -10,9 +10,9 @@ import { AxiosResponse } from 'axios';
 const rootURL = "http://localhost:3000/users"; 
 type CallBack = () => void;
 export class User{
-  public eventing: Eventing = new Eventing(); // this has on,trigger methods
-  public sync: Sync<UserPropsMain> = new Sync<UserPropsMain>(rootURL); // this has fetch(),save() methods
-  public attributes: Attributes<UserPropsMain>; // this has get(), set() methods
+  protected eventing: Eventing = new Eventing(); // this has on,trigger methods
+  protected sync: Sync<UserPropsMain> = new Sync<UserPropsMain>(rootURL); // this has fetch(),save() methods
+  protected attributes: Attributes<UserPropsMain>; // this has get(), set() methods
   constructor(attr: UserPropsMain){
     this.attributes = new Attributes<UserPropsMain>(attr);
   }

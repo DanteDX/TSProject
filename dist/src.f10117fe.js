@@ -2077,16 +2077,43 @@ function () {
 }();
 
 exports.User = User;
-},{"./Eventing":"src/models/Eventing.ts","./Sync":"src/models/Sync.ts","./Attributes":"src/models/Attributes.ts"}],"src/index.ts":[function(require,module,exports) {
+},{"./Eventing":"src/models/Eventing.ts","./Sync":"src/models/Sync.ts","./Attributes":"src/models/Attributes.ts"}],"src/models/Model.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Model = void 0;
+
+var User_1 = require("./User"); // we can make the use of static methods greatly this way instead of making an instance of the class
+
+
+var Model =
+/** @class */
+function () {
+  function Model(name) {
+    this.name = name;
+    this.collection = new Array(3).fill(this.name);
+  }
+
+  Model.BuildUser = function (attr) {
+    return new User_1.User(attr);
+  };
+
+  return Model;
+}();
+
+exports.Model = Model;
+},{"./User":"src/models/User.ts"}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var User_1 = require("./models/User");
+var Model_1 = require("./models/Model");
 
-var piyal = new User_1.User({
+var piyal = Model_1.Model.BuildUser({
   name: 'piyal',
   age: 30,
   id: 1
@@ -2094,7 +2121,10 @@ var piyal = new User_1.User({
 console.log(piyal.get('name'));
 console.log(piyal.get('age'));
 console.log(piyal.get('id'));
-},{"./models/User":"src/models/User.ts"}],"C:/Users/Dell/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var sample = new Model_1.Model('piyal');
+console.log(sample.name);
+console.log(sample.collection);
+},{"./models/Model":"src/models/Model.ts"}],"C:/Users/Dell/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2122,7 +2152,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61933" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54844" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
